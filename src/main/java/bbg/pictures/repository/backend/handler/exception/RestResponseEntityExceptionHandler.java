@@ -15,7 +15,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 
     @ExceptionHandler(value = IllegalStateException.class)
     protected ResponseEntity<Object> handleIllegalStateException(final IllegalStateException ex,
-                                                                    final WebRequest request) {
+                                                                 final WebRequest request) {
         final String responseBody = ex.getMessage();
         return handleExceptionInternal(ex, responseBody, new HttpHeaders(), HttpStatus.CONFLICT, request);
     }
@@ -29,7 +29,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 
     @ExceptionHandler(value = EntityNotFoundException.class)
     protected ResponseEntity<Object> handleEntityNotFoundException(final EntityNotFoundException ex,
-                                                                 final WebRequest request) {
+                                                                   final WebRequest request) {
         final String responseBody = ex.getMessage();
         return handleExceptionInternal(ex, responseBody, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }

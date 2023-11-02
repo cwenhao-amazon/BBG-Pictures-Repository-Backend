@@ -8,9 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public interface MemberRepository extends CrudRepository<Member, Long> {
 
-    public Member findMemberByName(final String name);
-    public boolean existsMemberByName(final String name);
+    Member findMemberByName(final String name);
+    boolean existsMemberByName(final String name);
     @Transactional
-    public void deleteMemberByName(final String name);
+    void deleteMemberByName(final String name);
 
 }

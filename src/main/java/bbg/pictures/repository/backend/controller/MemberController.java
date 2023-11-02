@@ -26,7 +26,15 @@ public class MemberController {
     @GetMapping(produces = "application/json")
     public ResponseEntity<Iterable<Member>> getMembers() {
         final Iterable<Member> members = memberService.findAll();
+
         return new ResponseEntity<>(members, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/{name}", produces = "application/json")
+    public ResponseEntity<Member> getMember(@PathVariable final String name) {
+        final Member member = memberService.findByName(name);
+
+        return new ResponseEntity<>(member, HttpStatus.OK);
     }
 
     @PostMapping(produces = "application/json")

@@ -12,7 +12,7 @@ public class MemberService {
     @Autowired
     private MemberRepository memberRepository;
 
-    public void save(Member member) {
+    public void save(final Member member) {
         memberRepository.save(member);
     }
 
@@ -20,8 +20,12 @@ public class MemberService {
         return memberRepository.findAll();
     }
 
+    public Member findByName(final String name) {
+        return memberRepository.findMemberByName(name);
+    }
+
     public Member update(final String name, final Member member) {
-        Member memberToUpdate = memberRepository.findMemberByName(name);
+        final Member memberToUpdate = memberRepository.findMemberByName(name);
         partialUpdate(memberToUpdate, member);
         memberRepository.save(memberToUpdate);
 
