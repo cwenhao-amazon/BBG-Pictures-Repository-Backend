@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import bbg.pictures.repository.backend.model.Member;
 import bbg.pictures.repository.backend.repository.MemberRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

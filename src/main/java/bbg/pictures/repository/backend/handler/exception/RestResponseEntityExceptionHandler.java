@@ -20,8 +20,8 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         return handleExceptionInternal(ex, responseBody, new HttpHeaders(), HttpStatus.CONFLICT, request);
     }
 
-    @ExceptionHandler(value = UnrecognizedPropertyException.class)
-    protected ResponseEntity<Object> handleUnrecognizedPropertyException(final UnrecognizedPropertyException ex,
+    @ExceptionHandler(value = {UnrecognizedPropertyException.class, IllegalArgumentException.class})
+    protected ResponseEntity<Object> handleUnrecognizedPropertyException(final RuntimeException ex,
                                                                          final WebRequest request) {
         final String responseBody = ex.getMessage();
         return handleExceptionInternal(ex, responseBody, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
