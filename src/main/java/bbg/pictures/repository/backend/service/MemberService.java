@@ -5,9 +5,9 @@ import java.util.Optional;
 import bbg.pictures.repository.backend.model.Member;
 import bbg.pictures.repository.backend.repository.MemberRepository;
 import bbg.pictures.repository.backend.validation.MemberValidator;
+
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,11 +20,11 @@ public class MemberService {
     public Member save(final Member member) {
         validator.validateOnSave(member);
 
-        try {
-            return memberRepository.save(member);
-        } catch (final DataIntegrityViolationException ex) {
+        if (memberRepository.existsById(member.getName())) {
             throw new IllegalStateException("Member with name '" + member.getName() + "' already exists");
         }
+
+        return memberRepository.save(member);
     }
 
     public Iterable<Member> findAll() {
@@ -32,7 +32,7 @@ public class MemberService {
     }
 
     public Member findByName(final String name) {
-        final Optional<Member> memberOptional = memberRepository.findMemberByName(name);
+        final Optional<Member> memberOptional = memberRepository.findById(name);
 
         if (memberOptional.isPresent()) {
             return memberOptional.get();
@@ -44,7 +44,7 @@ public class MemberService {
     public void update(final String name, final Member member) {
         validator.validateOnUpdate(member);
 
-        memberRepository.findMemberByName(name).ifPresentOrElse(
+        memberRepository.findById(name).ifPresentOrElse(
             memberToUpdate -> {
                 partialUpdate(memberToUpdate, member);
                 memberRepository.save(memberToUpdate);
@@ -56,7 +56,7 @@ public class MemberService {
     }
 
     public void delete(final String name) {
-        memberRepository.deleteMemberByName(name);
+        memberRepository.deleteById(name);
     }
 
     private void partialUpdate(final Member memberToUpdate, final Member memberFromUpdate) {

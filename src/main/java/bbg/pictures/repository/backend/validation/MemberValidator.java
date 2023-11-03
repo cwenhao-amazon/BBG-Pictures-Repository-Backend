@@ -6,10 +6,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class MemberValidator {
     public void validateOnSave(final Member member) {
-        if (member.getId() != null) {
-            throw new IllegalArgumentException("Cannot set field: 'id'");
-        }
-
         if (member.getName() == null) {
             throw new IllegalArgumentException("Must set field: 'name'");
         }
