@@ -25,7 +25,7 @@ public class ImageDataService {
         try {
             imageDataRepository.save(imageData);
         } catch (final DataIntegrityViolationException ex) {
-            throw new IllegalStateException("Image on path '" + imageData.getId() + "' already exists");
+            throw new IllegalStateException("Image on path '" + imageData.getPath() + "' already exists");
         }
 
     }
