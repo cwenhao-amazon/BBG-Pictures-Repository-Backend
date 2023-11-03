@@ -2,8 +2,6 @@ package bbg.pictures.repository.backend.controller;
 
 import bbg.pictures.repository.backend.model.Member;
 import bbg.pictures.repository.backend.service.MemberService;
-import bbg.pictures.repository.backend.validation.MemberRequestValidator;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,13 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberController {
     @Autowired
     private MemberService memberService;
-    @Autowired
-    private MemberRequestValidator validator;
 
     @PostMapping(produces = "application/json")
     public ResponseEntity<Member> saveMember(@RequestBody final Member member) {
-        validator.validateOnPost(member);
-
         memberService.save(member);
 
         return new ResponseEntity<>(member, HttpStatus.CREATED);
@@ -42,28 +36,23 @@ public class MemberController {
 
     @GetMapping(path = "/{name}", produces = "application/json")
     public ResponseEntity<Member> getMember(@PathVariable final String name) {
-        validator.validateOnGet(name);
-
         final Member member = memberService.findByName(name);
 
         return new ResponseEntity<>(member, HttpStatus.OK);
     }
 
     @PatchMapping(path = "/{name}", produces = "application/json")
-    public ResponseEntity<Member> updateMember(@PathVariable final String name, @RequestBody final Member member) {
-        validator.validateOnPatch(name, member);
+    public ResponseEntity<String> updateMember(@PathVariable final String name, @RequestBody final Member member) {
+        memberService.update(name, member);
 
-        final Member updatedMember = memberService.update(name, member);
-
-        return new ResponseEntity<>(updatedMember, HttpStatus.OK);
+        return new ResponseEntity<>("Successfully updated member with name: '" + name + "'", HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/{name}", produces = "application/json")
     public ResponseEntity<String> deleteMember(@PathVariable final String name) {
-        validator.validateOnDelete(name);
-
         memberService.delete(name);
 
+        //TODO Make it so an exception is thrown when the entity with the name does not exists. Currently it returns the same response as it does when it exists.
         return new ResponseEntity<>("Successfully deleted member with name: '" + name + "'", HttpStatus.OK);
     }
 }

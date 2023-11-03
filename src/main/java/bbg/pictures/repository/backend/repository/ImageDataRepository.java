@@ -7,5 +7,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ImageDataRepository extends CrudRepository<ImageData, Long> {
-    boolean existsImageDataByPath(final String path);
 }

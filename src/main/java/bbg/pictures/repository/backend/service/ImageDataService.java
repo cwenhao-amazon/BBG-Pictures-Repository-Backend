@@ -2,53 +2,67 @@ package bbg.pictures.repository.backend.service;
 
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import bbg.pictures.repository.backend.model.ImageData;
 import bbg.pictures.repository.backend.repository.ImageDataRepository;
-
+import bbg.pictures.repository.backend.validation.ImageDataValidator;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ImageDataService {
     @Autowired
     private ImageDataRepository imageDataRepository;
+    @Autowired
+    private ImageDataValidator validator;
 
     public void save(final ImageData imageData) {
-        imageDataRepository.save(imageData);
+        validator.validateOnSave(imageData);
+
+        try {
+            imageDataRepository.save(imageData);
+        } catch (final DataIntegrityViolationException ex) {
+            throw new IllegalStateException("Image on path '" + imageData.getId() + "' already exists");
+        }
+
     }
 
     public Iterable<ImageData> findAllMatchingFilters(final String uploaderName, final String album) {
         final Iterable<ImageData> images = imageDataRepository.findAll();
         return StreamSupport.stream(images.spliterator(), false)
                             .filter(imageData -> matchesFilters(imageData, uploaderName, album))
-                            .collect(Collectors.toList());
+                            .toList();
     }
 
     public ImageData findById(final Long id) {
-        return imageDataRepository.findById(id).get();
+        final Optional<ImageData> imageOptional = imageDataRepository.findById(id);
+
+        if (imageOptional.isPresent()) {
+            return imageOptional.get();
+        } else {
+            throw new EntityNotFoundException("Image by id '" + id + "' does not exist");
+        }
     }
 
-    public ImageData update(final Long id, final ImageData imageData) {
-        final ImageData imageToUpdate = imageDataRepository.findById(id).get();
-        partialUpdate(imageToUpdate, imageData);
-        imageDataRepository.save(imageToUpdate);
+    public void update(final Long id, final ImageData imageData) {
+        validator.validateOnUpdate(imageData);
 
-        return imageToUpdate;
+        imageDataRepository.findById(id).ifPresentOrElse(
+            imageToUpdate -> {
+                partialUpdate(imageToUpdate, imageData);
+                imageDataRepository.save(imageToUpdate);
+            },
+            () -> {
+                throw new EntityNotFoundException("Image by id '" + id + "' does not exist");
+            }
+        );
     }
 
     public void delete(final Long id) {
         imageDataRepository.deleteById(id);
-    }
-
-    public boolean existsByPath(final String path) {
-        return imageDataRepository.existsImageDataByPath(path);
-    }
-
-    public boolean existsById(final Long id) {
-        return imageDataRepository.existsById(id);
     }
 
     private boolean matchesFilters(final ImageData imageData, final String uploaderName, final String album) {

@@ -2,8 +2,6 @@ package bbg.pictures.repository.backend.controller;
 
 import bbg.pictures.repository.backend.model.ImageData;
 import bbg.pictures.repository.backend.service.ImageDataService;
-import bbg.pictures.repository.backend.validation.ImageDataRequestValidator;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,13 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class ImageDataController {
     @Autowired
     private ImageDataService imageDataService;
-    @Autowired
-    private ImageDataRequestValidator validator;
 
     @PostMapping(produces = "application/json")
     public ResponseEntity<ImageData> saveImage(@RequestBody final ImageData imageData) {
-        validator.validateOnPost(imageData);
-
         imageDataService.save(imageData);
 
         return new ResponseEntity<>(imageData, HttpStatus.CREATED);
@@ -43,28 +37,23 @@ public class ImageDataController {
 
     @GetMapping(path = "/{id}", produces = "application/json")
     public ResponseEntity<ImageData> getImage(@PathVariable final Long id) {
-        validator.validateOnGet(id);
-
         final ImageData image = imageDataService.findById(id);
 
         return new ResponseEntity<>(image, HttpStatus.OK);
     }
 
     @PatchMapping(path = "/{id}", produces = "application/json")
-    public ResponseEntity<ImageData> updateImage(@PathVariable final Long id, @RequestBody final ImageData imageData) {
-        validator.validateOnPatch(id, imageData);
+    public ResponseEntity<String> updateImage(@PathVariable final Long id, @RequestBody final ImageData imageData) {
+        imageDataService.update(id, imageData);
 
-        final ImageData updatedImageData = imageDataService.update(id, imageData);
-
-        return new ResponseEntity<>(updatedImageData, HttpStatus.OK);
+        return new ResponseEntity<>("Successfully updated image with id: '" + id + "'", HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/{id}", produces = "application/json")
     public ResponseEntity<String> deleteImage(@PathVariable final Long id) {
-        validator.validateOnDelete(id);
-
         imageDataService.delete(id);
 
+        //TODO Make it so an exception is thrown when the entity with the id does not exists. Currently it returns the same response as it does when it exists.
         return new ResponseEntity<>("Successfully deleted image with id: '" + id + "'", HttpStatus.OK);
     }
 }
