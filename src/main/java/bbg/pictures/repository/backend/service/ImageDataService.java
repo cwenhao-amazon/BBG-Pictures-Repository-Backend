@@ -19,15 +19,14 @@ public class ImageDataService {
     @Autowired
     private ImageDataValidator validator;
 
-    public void save(final ImageData imageData) {
+    public ImageData save(final ImageData imageData) {
         validator.validateOnSave(imageData);
-
+        
         try {
-            imageDataRepository.save(imageData);
+            return imageDataRepository.save(imageData);
         } catch (final DataIntegrityViolationException ex) {
             throw new IllegalStateException("Image on path '" + imageData.getPath() + "' already exists");
         }
-
     }
 
     public Iterable<ImageData> findAllMatchingFilters(final String uploaderName, final String album) {

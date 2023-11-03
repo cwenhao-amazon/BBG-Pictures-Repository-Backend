@@ -17,11 +17,11 @@ public class MemberService {
     @Autowired
     private MemberValidator validator;
 
-    public void save(final Member member) {
+    public Member save(final Member member) {
         validator.validateOnSave(member);
 
         try {
-            memberRepository.save(member);
+            return memberRepository.save(member);
         } catch (final DataIntegrityViolationException ex) {
             throw new IllegalStateException("Member with name '" + member.getName() + "' already exists");
         }
