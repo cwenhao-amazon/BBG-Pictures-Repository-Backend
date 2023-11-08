@@ -8,6 +8,7 @@ import bbg.pictures.repository.backend.model.dto.UserDto;
 import bbg.pictures.repository.backend.model.response.SuccessResponse;
 import bbg.pictures.repository.backend.service.UserService;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+@Slf4j
 @RestController
 @RequestMapping("api/v1/user")
 public class UserController {
@@ -29,6 +31,7 @@ public class UserController {
 
     @PostMapping(produces = "application/json")
     public ResponseEntity<UserDetails> saveUser(@RequestBody final UserDto user) {
+        log.info("POST request received at {}", ServletUriComponentsBuilder.fromCurrentRequest().build());
         final UserDetails userDetails = userService.save(user);
 
         final URI location = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -40,6 +43,7 @@ public class UserController {
 
     @GetMapping(path = "/{username}", produces = "application/json")
     public ResponseEntity<UserDetails> getUser(@PathVariable final String username) {
+        log.info("GET request received at {}", ServletUriComponentsBuilder.fromCurrentRequest().build());
         final UserDetails userDetails = userService.findByUsername(username);
 
         return ResponseEntity.ok().body(userDetails);
@@ -47,6 +51,7 @@ public class UserController {
 
     @PatchMapping(produces = "application/json")
     public ResponseEntity<SuccessResponse> updateUser(@RequestBody final UpdatePasswordDto passwords) {
+        log.info("PATCH request received at {}", ServletUriComponentsBuilder.fromCurrentRequest().build());
         userService.updatePassword(passwords);
 
         final SuccessResponse responseBody = SuccessResponse.builder()
@@ -58,6 +63,7 @@ public class UserController {
 
     @DeleteMapping(path = "/{username}", produces = "application/json")
     public ResponseEntity<SuccessResponse> deleteUser(@PathVariable final String username) {
+        log.info("DELETE request received at {}", ServletUriComponentsBuilder.fromCurrentRequest().build());
         userService.delete(username);
 
         final SuccessResponse responseBody = SuccessResponse.builder()
