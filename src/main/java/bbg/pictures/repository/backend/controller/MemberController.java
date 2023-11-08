@@ -7,6 +7,7 @@ import bbg.pictures.repository.backend.model.Member;
 import bbg.pictures.repository.backend.model.response.SuccessResponse;
 import bbg.pictures.repository.backend.service.MemberService;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,12 +22,14 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
 @RequestMapping("api/v1/member")
+@Slf4j
 public class MemberController {
     @Autowired
     private MemberService memberService;
 
     @PostMapping(produces = "application/json")
     public ResponseEntity<Member> saveMember(@RequestBody final Member member) {
+        log.info("POST request received at {}", ServletUriComponentsBuilder.fromCurrentRequest().build());
         final Member createdMember = memberService.save(member);
 
         final URI location = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -38,6 +41,7 @@ public class MemberController {
 
     @GetMapping(produces = "application/json")
     public ResponseEntity<Iterable<Member>> getMembers() {
+        log.info("GET request received at {}", ServletUriComponentsBuilder.fromCurrentRequest().build());
         final Iterable<Member> members = memberService.findAll();
 
         return ResponseEntity.ok().body(members);
@@ -45,6 +49,7 @@ public class MemberController {
 
     @GetMapping(path = "/{name}", produces = "application/json")
     public ResponseEntity<Member> getMember(@PathVariable final String name) {
+        log.info("GET request received at {}", ServletUriComponentsBuilder.fromCurrentRequest().build());
         final Member member = memberService.findByName(name);
 
         return ResponseEntity.ok().body(member);
@@ -52,6 +57,7 @@ public class MemberController {
 
     @PatchMapping(path = "/{name}", produces = "application/json")
     public ResponseEntity<SuccessResponse> updateMember(@PathVariable final String name, @RequestBody final Member member) {
+        log.info("PATCH request received at {}", ServletUriComponentsBuilder.fromCurrentRequest().build());
         memberService.update(name, member);
 
         final SuccessResponse responseBody = SuccessResponse.builder()
@@ -63,6 +69,7 @@ public class MemberController {
 
     @DeleteMapping(path = "/{name}", produces = "application/json")
     public ResponseEntity<SuccessResponse> deleteMember(@PathVariable final String name) {
+        log.info("DELETE request received at {}", ServletUriComponentsBuilder.fromCurrentRequest().build());
         memberService.delete(name);
 
         //TODO Make it so an exception is thrown when the entity with the name does not exists. Currently it returns the same response as it does when it exists.
