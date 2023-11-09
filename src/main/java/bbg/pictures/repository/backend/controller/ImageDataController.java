@@ -20,9 +20,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+@Slf4j
 @RestController
 @RequestMapping("api/v1/image")
-@Slf4j
 public class ImageDataController {
 
     @Autowired

@@ -4,6 +4,7 @@ import bbg.pictures.repository.backend.model.dto.UpdatePasswordDto;
 import bbg.pictures.repository.backend.model.dto.UserDto;
 import bbg.pictures.repository.backend.validation.UserValidator;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,6 +14,7 @@ import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @Transactional
 public class UserService {
