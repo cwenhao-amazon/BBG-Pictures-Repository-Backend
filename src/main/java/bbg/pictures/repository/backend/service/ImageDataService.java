@@ -8,11 +8,13 @@ import bbg.pictures.repository.backend.model.ImageData;
 import bbg.pictures.repository.backend.repository.ImageDataRepository;
 import bbg.pictures.repository.backend.validation.ImageDataValidator;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class ImageDataService {
     @Autowired
     private ImageDataRepository imageDataRepository;
@@ -25,6 +27,7 @@ public class ImageDataService {
         try {
             return imageDataRepository.save(imageData);
         } catch (final DataIntegrityViolationException ex) {
+            log.error("A Database error occurred: ", ex);
             throw new IllegalStateException("Image on path '" + imageData.getPath() + "' already exists");
         }
     }
@@ -42,6 +45,7 @@ public class ImageDataService {
         if (imageOptional.isPresent()) {
             return imageOptional.get();
         } else {
+            log.error("Could not find image entity: " + id);
             throw new EntityNotFoundException("Image by id '" + id + "' does not exist");
         }
     }
@@ -55,6 +59,7 @@ public class ImageDataService {
                 imageDataRepository.save(imageToUpdate);
             },
             () -> {
+                log.error("Could not find image entity: " + id);
                 throw new EntityNotFoundException("Image by id '" + id + "' does not exist");
             }
         );

@@ -7,10 +7,12 @@ import bbg.pictures.repository.backend.repository.MemberRepository;
 import bbg.pictures.repository.backend.validation.MemberValidator;
 
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class MemberService {
     @Autowired
     private MemberRepository memberRepository;
@@ -21,6 +23,7 @@ public class MemberService {
         validator.validateOnSave(member);
 
         if (memberRepository.existsById(member.getName())) {
+            log.error("Member entity conflict occurred");
             throw new IllegalStateException("Member with name '" + member.getName() + "' already exists");
         }
 
@@ -37,6 +40,7 @@ public class MemberService {
         if (memberOptional.isPresent()) {
             return memberOptional.get();
         } else {
+            log.error("Could not find member entity: " + name);
             throw new EntityNotFoundException("Member with name '" + name + "' does not exist");
         }
     }
@@ -50,6 +54,7 @@ public class MemberService {
                 memberRepository.save(memberToUpdate);
             },
             () -> {
+                log.error("Could not find member entity: " + name);
                 throw new EntityNotFoundException("Member with name '" + name + "' does not exist");
             }
         );
