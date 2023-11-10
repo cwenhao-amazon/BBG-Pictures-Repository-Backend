@@ -10,19 +10,19 @@ public class ImageDataValidator {
             throw new IllegalArgumentException("Cannot set field: 'id'");
         }
 
-        if (imageData.getPath() == null) {
+        if (imageData.getPath() == null || imageData.getPath().isBlank()) {
             throw new IllegalArgumentException("Must set field: 'path'");
         }
 
-        if (imageData.getUploadTimestamp() == null) {
+        if (imageData.getUploadTimestamp() == null || imageData.getUploadTimestamp().isBlank()) {
             throw new IllegalArgumentException("Must set field: 'upload_timestamp'");
         }
 
-        if (imageData.getUploaderName() == null) {
+        if (imageData.getUploaderName() == null || imageData.getUploaderName().isBlank()) {
             throw new IllegalArgumentException("Must set field: 'uploader_name'");
         }
 
-        if (imageData.getAlbum() == null) {
+        if (imageData.getAlbum() == null || imageData.getAlbum().isBlank()) {
             throw new IllegalArgumentException("Must set field: 'album'");
         }
     }

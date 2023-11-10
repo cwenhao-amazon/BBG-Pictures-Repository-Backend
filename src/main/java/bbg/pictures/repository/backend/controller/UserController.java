@@ -3,13 +3,15 @@ package bbg.pictures.repository.backend.controller;
 import java.net.URI;
 import java.time.LocalDateTime;
 
-import bbg.pictures.repository.backend.model.Member;
+import bbg.pictures.repository.backend.model.dto.UpdatePasswordDto;
+import bbg.pictures.repository.backend.model.dto.UserDto;
 import bbg.pictures.repository.backend.model.response.SuccessResponse;
-import bbg.pictures.repository.backend.service.MemberService;
+import bbg.pictures.repository.backend.service.UserService;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -20,62 +22,53 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-@RestController
-@RequestMapping("api/v1/member")
 @Slf4j
-public class MemberController {
+@RestController
+@RequestMapping("api/v1/user")
+public class UserController {
     @Autowired
-    private MemberService memberService;
+    private UserService userService;
 
     @PostMapping(produces = "application/json")
-    public ResponseEntity<Member> saveMember(@RequestBody final Member member) {
+    public ResponseEntity<UserDetails> saveUser(@RequestBody final UserDto user) {
         log.info("POST request received at {}", ServletUriComponentsBuilder.fromCurrentRequest().build());
-        final Member createdMember = memberService.save(member);
+        final UserDetails userDetails = userService.save(user);
 
         final URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                                                        .path("/{name}")
-                                                        .buildAndExpand(createdMember.getName())
+                                                        .path("/{username}")
+                                                        .buildAndExpand(userDetails.getUsername())
                                                         .toUri();
-        return ResponseEntity.created(location).body(member);
+        return ResponseEntity.created(location).body(userDetails);
     }
 
-    @GetMapping(produces = "application/json")
-    public ResponseEntity<Iterable<Member>> getMembers() {
+    @GetMapping(path = "/{username}", produces = "application/json")
+    public ResponseEntity<UserDetails> getUser(@PathVariable final String username) {
         log.info("GET request received at {}", ServletUriComponentsBuilder.fromCurrentRequest().build());
-        final Iterable<Member> members = memberService.findAll();
+        final UserDetails userDetails = userService.findByUsername(username);
 
-        return ResponseEntity.ok().body(members);
+        return ResponseEntity.ok().body(userDetails);
     }
 
-    @GetMapping(path = "/{name}", produces = "application/json")
-    public ResponseEntity<Member> getMember(@PathVariable final String name) {
-        log.info("GET request received at {}", ServletUriComponentsBuilder.fromCurrentRequest().build());
-        final Member member = memberService.findByName(name);
-
-        return ResponseEntity.ok().body(member);
-    }
-
-    @PatchMapping(path = "/{name}", produces = "application/json")
-    public ResponseEntity<SuccessResponse> updateMember(@PathVariable final String name, @RequestBody final Member member) {
+    @PatchMapping(produces = "application/json")
+    public ResponseEntity<SuccessResponse> updateUser(@RequestBody final UpdatePasswordDto passwords) {
         log.info("PATCH request received at {}", ServletUriComponentsBuilder.fromCurrentRequest().build());
-        memberService.update(name, member);
+        userService.updatePassword(passwords);
 
         final SuccessResponse responseBody = SuccessResponse.builder()
                                                             .timestamp(LocalDateTime.now())
-                                                            .message("Successfully updated member with name: '" + name + "'")
+                                                            .message("Successfully updated password")
                                                             .build();
         return ResponseEntity.ok().body(responseBody);
     }
 
-    @DeleteMapping(path = "/{name}", produces = "application/json")
-    public ResponseEntity<SuccessResponse> deleteMember(@PathVariable final String name) {
+    @DeleteMapping(path = "/{username}", produces = "application/json")
+    public ResponseEntity<SuccessResponse> deleteUser(@PathVariable final String username) {
         log.info("DELETE request received at {}", ServletUriComponentsBuilder.fromCurrentRequest().build());
-        memberService.delete(name);
+        userService.delete(username);
 
-        //TODO Make it so an exception is thrown when the entity with the name does not exists. Currently it returns the same response as it does when it exists.
         final SuccessResponse responseBody = SuccessResponse.builder()
                                                             .timestamp(LocalDateTime.now())
-                                                            .message("Successfully deleted member with name: '" + name + "'")
+                                                            .message("Successfully deleted user with username: '" + username + "'")
                                                             .build();
         return ResponseEntity.ok().body(responseBody);
     }
