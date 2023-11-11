@@ -73,7 +73,6 @@ public class ImageDataController {
         log.info("DELETE request received at {}", ServletUriComponentsBuilder.fromCurrentRequest().build());
         imageDataService.delete(id);
 
-        //TODO Make it so an exception is thrown when the entity with the id does not exists. Currently it returns the same response as it does when it exists.
         final SuccessResponse responseBody = SuccessResponse.builder()
                                                             .timestamp(LocalDateTime.now())
                                                             .message("Successfully deleted image with id: '" + id + "'")
