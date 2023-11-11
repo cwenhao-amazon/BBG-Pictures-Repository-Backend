@@ -1,5 +1,6 @@
 package bbg.pictures.repository.backend.validation;
 
+import static bbg.pictures.repository.backend.test_utils.BuilderUtils.imageData;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -20,7 +21,7 @@ class ImageDataValidatorTest {
     private ImageDataValidator objectUnderTest;
 
     @Test
-    void whenValidImageDataIsPassedToValidateOnSave_shouldNotThrowAnyExceptions() {
+    void shouldNotThrowAnyExceptions_onValidateOnSave_whenImageDataIsValid() {
         final ImageData imageData = imageData(null, "path", "uploadTimestamp", "uploaderName", "album");
 
         assertThatCode(() -> objectUnderTest.validateOnSave(imageData)).doesNotThrowAnyException();
@@ -28,12 +29,12 @@ class ImageDataValidatorTest {
 
     @ParameterizedTest
     @MethodSource("provideForInvalidSave")
-    void whenInvalidImageDataIsPassedToValidateOnSave_shouldThrowException(final Long id,
-                                                                           final String path,
-                                                                           final String uploadTimestamp,
-                                                                           final String uploaderName,
-                                                                           final String album,
-                                                                           final Exception exception) {
+    void shouldThrowException_onValidateOnSave_whenImageDataIsInvalid(final Long id,
+                                                                      final String path,
+                                                                      final String uploadTimestamp,
+                                                                      final String uploaderName,
+                                                                      final String album,
+                                                                      final Exception exception) {
         ImageData imageData = imageData(id, path, uploadTimestamp, uploaderName, album);
 
         assertThatThrownBy(() -> objectUnderTest.validateOnSave(imageData))
@@ -42,7 +43,7 @@ class ImageDataValidatorTest {
     }
 
     @Test
-    void whenValidImageDataIsPassedToValidateOnUpdate_shouldNotThrowAnyExceptions() {
+    void shouldNotThrowAnyExceptions_onValidateOnUpdate_whenImageDataIsValid() {
         final ImageData imageData = imageData(null, null, null, null, "album");
 
         assertThatCode(() -> objectUnderTest.validateOnUpdate(imageData)).doesNotThrowAnyException();
@@ -50,12 +51,12 @@ class ImageDataValidatorTest {
 
     @ParameterizedTest
     @MethodSource("provideForInvalidUpdate")
-    void whenInvalidImageDataIsPassedToValidateOnUpdate_shouldThrowException(final Long id,
-                                                                             final String path,
-                                                                             final String uploadTimestamp,
-                                                                             final String uploaderName,
-                                                                             final String album,
-                                                                             final Exception exception) {
+    void shouldThrowException_onValidateOnUpdate_whenImageDataIsInvalid(final Long id,
+                                                                        final String path,
+                                                                        final String uploadTimestamp,
+                                                                        final String uploaderName,
+                                                                        final String album,
+                                                                        final Exception exception) {
         ImageData imageData = imageData(id, path, uploadTimestamp, uploaderName, album);
 
         assertThatThrownBy(() -> objectUnderTest.validateOnUpdate(imageData))
@@ -69,7 +70,11 @@ class ImageDataValidatorTest {
                 Arguments.of(null, null, "uploadTimestamp", "uploaderName", "album", new IllegalArgumentException("Must set field: 'path'")),
                 Arguments.of(null, "path", null, "uploaderName", "album", new IllegalArgumentException("Must set field: 'upload_timestamp'")),
                 Arguments.of(null, "path", "uploadTimestamp", null, "album", new IllegalArgumentException("Must set field: 'uploader_name'")),
-                Arguments.of(null, "path", "uploadTimestamp", "uploaderName", null, new IllegalArgumentException("Must set field: 'album'")));
+                Arguments.of(null, "path", "uploadTimestamp", "uploaderName", null, new IllegalArgumentException("Must set field: 'album'")),
+                Arguments.of(null, "", "uploadTimestamp", "uploaderName", "album", new IllegalArgumentException("Must set field: 'path'")),
+                Arguments.of(null, "path", "", "uploaderName", "album", new IllegalArgumentException("Must set field: 'upload_timestamp'")),
+                Arguments.of(null, "path", "uploadTimestamp", "", "album", new IllegalArgumentException("Must set field: 'uploader_name'")),
+                Arguments.of(null, "path", "uploadTimestamp", "uploaderName", "", new IllegalArgumentException("Must set field: 'album'")));
     }
 
     private static Stream<Arguments> provideForInvalidUpdate() {
@@ -78,20 +83,5 @@ class ImageDataValidatorTest {
                 Arguments.of(null, "path", null, null, "album", new IllegalArgumentException("Updating is forbidden for field: 'path'")),
                 Arguments.of(null, null, "uploadTimestamp", null, "album", new IllegalArgumentException("Updating is forbidden for field: 'upload_timestamp'")),
                 Arguments.of(null, null, null, "uploaderName", "album", new IllegalArgumentException("Updating is forbidden for field: 'uploader_name'")));
-    }
-
-    private ImageData imageData(final Long id,
-                                final String path,
-                                final String uploadTimestamp,
-                                final String uploaderName,
-                                final String album) {
-        final ImageData imageData = new ImageData();
-        imageData.setId(id);
-        imageData.setPath(path);
-        imageData.setUploadTimestamp(uploadTimestamp);
-        imageData.setUploaderName(uploaderName);
-        imageData.setAlbum(album);
-
-        return imageData;
     }
 }

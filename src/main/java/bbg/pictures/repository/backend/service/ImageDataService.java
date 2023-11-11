@@ -68,7 +68,12 @@ public class ImageDataService {
     }
 
     public void delete(final Long id) {
-        imageDataRepository.deleteById(id);
+        if (imageDataRepository.existsById(id)) {
+            imageDataRepository.deleteById(id);
+        } else {
+            log.error("Could not find image entity: " + id);
+            throw new EntityNotFoundException("Image by id '" + id + "' does not exist");
+        }
     }
 
     private boolean matchesFilters(final ImageData imageData, final String uploaderName, final String album) {

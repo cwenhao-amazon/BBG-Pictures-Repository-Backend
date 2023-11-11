@@ -1,5 +1,6 @@
 package bbg.pictures.repository.backend.model;
 
+import static bbg.pictures.repository.backend.test_utils.BuilderUtils.imageData;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
@@ -36,12 +37,7 @@ class ImageDataTest {
         final ObjectMapper objectMapper = new ObjectMapper();
         final ImageData actual = objectMapper.readValue(ResourceUtils.getFile("classpath:image_data.json"), ImageData.class);
 
-        final ImageData expected = new ImageData();
-        expected.setId(1L);
-        expected.setPath("path");
-        expected.setUploadTimestamp("uploadTimestamp");
-        expected.setUploaderName("uploaderName");
-        expected.setAlbum("album");
+        final ImageData expected = imageData(1L, "path", "uploadTimestamp", "uploaderName", "album");
 
         assertThat(actual).isEqualTo(expected);
     }

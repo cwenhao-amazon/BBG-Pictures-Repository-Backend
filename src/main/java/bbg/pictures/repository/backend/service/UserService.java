@@ -57,7 +57,7 @@ public class UserService {
     }
 
     public void delete(final String username) {
-        if (userDetailsService.userExists(username)) {
+        if (!userDetailsService.userExists(username)) {
             throw new EntityNotFoundException("User with username '" + username + "' does not exist");
         }
 
