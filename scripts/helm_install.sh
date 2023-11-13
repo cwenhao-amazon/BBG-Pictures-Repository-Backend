@@ -19,7 +19,7 @@ buildImage() {
   then
     cd ${PROJECT_ROOT_DIRECTORY}
 
-    mvn clean build
+    mvn clean package
 
     docker build -t molgergo01/bbg-pictures-repository-backend:${VERSION} .
     docker push molgergo01/bbg-pictures-repository-backend:${VERSION}

@@ -4,7 +4,7 @@ cd ..
 
 VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
 
-mvn clean build
+mvn clean package
 
 docker build -t molgergo01/bbg-pictures-repository-backend:${VERSION} .
 docker push molgergo01/bbg-pictures-repository-backend:${VERSION}
