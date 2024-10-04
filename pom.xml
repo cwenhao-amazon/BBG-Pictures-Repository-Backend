@@ -113,7 +113,13 @@
             		                <phase>test</phase>
             		                <goals>
             		                        <goal>report</goal>
-            		                </goals>
+					</goals>
+					<configuration>
+              					<formats>
+                					<format>XML</format>
+                					<format>CSV</format>
+              					</formats>
+            				</configuration>
             		        </execution>
             		        <execution>
             		                <id>report-aggregate</id>
