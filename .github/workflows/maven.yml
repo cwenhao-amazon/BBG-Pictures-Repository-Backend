@@ -34,7 +34,7 @@ jobs:
       run: mvn clean test
 
     - name: list out all file
-      run: ls ${{ github.workspace }}/**/target/site/jacoco/
+      run: ls ${{ github.workspace }}/target/site/jacoco/
 
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
     #- name: Update dependency graph
